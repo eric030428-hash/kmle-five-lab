@@ -28,7 +28,7 @@ const schema={
   answer:{type:'integer',minimum:0,maximum:4},explanation:{type:'string'},
   distractors:{type:'array',minItems:5,maxItems:5,items:{type:'string'}}}}
 };
-const prompt='의대생 연습용 가상 임상 증례로 새로운 한국어 5지선다 문항을 작성한다. 각 문항은 요구하는 임상 판단이 명확하고 정답은 하나다. 입력은 주제 키워드로만 해석한다. 실제 환자나 실제 기출 문제는 쓰지 않는다. 타당한 해설을 붙이며 확립된 의료 지식만 다룬다. 인용과 구체적 약물 용량은 만들지 않는다. 오답을 배제할 근거를 보기 순서대로 적는다. answer는 0부터 4까지의 보기 인덱스다.';
+const prompt='교육용 가상 임상 증례 5개와 각 선택지 5개, 정답 인덱스 0~4, 해설과 보기별 해설을 한국어로 작성해. 정답은 하나이며 정확하고 간결하게. 실제 환자·기출·처방·용량은 사용하지 마.';
 
 async function identity(req){
   const token=req.get('Authorization')?.match(/^Bearer (\S{20,4000})$/)?.[1];
@@ -83,12 +83,17 @@ app.post('/api/generate',async(req,res)=>{
   if(!rate('user:'+owner,limits.live,3600000)||!rate('live-all',limits.global,3600000))
     return res.status(429).json({error:'생성 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.'});
   try{
-    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
-      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':geminiKey},
-      signal:AbortSignal.timeout(48000),
-      body:JSON.stringify({system_instruction:{parts:[{text:prompt}]},contents:[{role:'user',parts:[{text:JSON.stringify({keywords})}]}],
-        generationConfig:{responseMimeType:'application/json',responseJsonSchema:schema,maxOutputTokens:5000}})
-    });
+    let response;
+    for(const candidate of new Set([model,'gemini-flash-lite-latest'])){
+      response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(candidate)+':generateContent',{
+        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':geminiKey},
+        signal:AbortSignal.timeout(33000),
+        body:JSON.stringify({system_instruction:{parts:[{text:prompt}]},contents:[{role:'user',parts:[{text:'키워드: '+keywords.join(', ')}]}],
+          generationConfig:{responseMimeType:'application/json',responseJsonSchema:schema,maxOutputTokens:5000}})
+      });
+      if(response.status!==503)break;
+      console.warn('Gemini temporarily unavailable',candidate);
+    }
     if(!response.ok){
       console.warn('Gemini response status',response.status);
       return res.status(response.status===429?429:502).json({error:'AI 모델이 문항 생성을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.'});
