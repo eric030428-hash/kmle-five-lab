@@ -1,5 +1,5 @@
 import express from 'express';
-import {randomUUID} from 'node:crypto';
+import {randomInt,randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {OAuth2Client} from 'google-auth-library';
 import {sample} from './sample.mjs';
@@ -63,6 +63,14 @@ function valid(items){
     x&&text(x.stem,1500)&&text(x.explanation,800)&&list(x.options,300)&&new Set(x.options.map(v=>v.trim())).size===5&&
     list(x.distractors,450)&&Number.isInteger(x.answer)&&x.answer>=0&&x.answer<5);
 }
+function shuffleOptions({options,answer,distractors,...item}){
+  const order=[0,1,2,3,4];
+  for(let i=order.length-1;i>0;i--){
+    const j=randomInt(i+1);
+    [order[i],order[j]]=[order[j],order[i]];
+  }
+  return {...item,options:order.map(i=>options[i]),answer:order.indexOf(answer),distractors:order.map(i=>distractors[i])};
+}
 app.get('/healthz',(_,res)=>res.json({ready:true,signIn:Boolean(clientId),generation:Boolean(geminiKey)}));
 app.get('/api/config',(_,res)=>res.json({clientId:clientId||null,generation:Boolean(geminiKey)}));
 app.post('/api/session',async(req,res)=>{
@@ -101,7 +109,7 @@ app.post('/api/generate',async(req,res)=>{
     const responseBody=await response.json();
     const items=JSON.parse(responseBody.candidates?.[0]?.content?.parts?.map(part=>part.text||'').join('')||'null');
     if(!valid(items))return res.status(502).json({error:'문항 검증을 통과하지 못했습니다. 다시 생성해 주세요.'});
-    startSet(res,items,owner,'gemini');
+    startSet(res,items.map(shuffleOptions),owner,'gemini');
   }catch{
     res.status(502).json({error:'AI 응답을 받아오지 못했습니다. 잠시 후 다시 시도해 주세요.'});
   }
