@@ -1,0 +1,9 @@
+{
+  "name": "kmle-quiz-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "scripts": {"start": "node server.mjs"},
+  "dependencies": {"express": "^5.1.0", "google-auth-library": "^10.0.0"}
+}

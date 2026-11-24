@@ -1,0 +1,27 @@
+:root { color: #14283b; background: #f8f6ef; font: 1rem/1.6 "Noto Sans KR","Apple SD Gothic Neo",sans-serif; --rule:#ccd4da; --action:#234eae; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+header { border-bottom: 1px solid var(--rule); padding: .8rem max(1.2rem,calc((100% - 58rem)/2)); display: flex; justify-content: space-between; gap: .8rem; font-weight: 700; }
+main { max-width: 58rem; margin: 0 auto; padding: 2.5rem 1.2rem; }
+h1 { margin: 0 0 .5rem; font-size: clamp(2.15rem,6vw,4rem); line-height: 1.13; letter-spacing: -.06em; }
+h2 { margin: 0 0 .8rem; }
+p { margin: .35rem 0; }
+.panel, #quiz { margin: 1.6rem 0; padding: 1.25rem; border-top: 3px solid #14283b; background: white; }
+#generate { display: grid; grid-template-columns: 1fr auto; gap: .5rem; margin: 1rem 0 .7rem; }
+#generate label { grid-column: 1 / -1; font-weight: 700; }
+input,button { font: inherit; }
+input { padding: .55rem; border: 1px solid #9eb1bf; min-width: 0; }
+button { cursor: pointer; padding: .55rem .85rem; border: 1px solid var(--action); border-radius: .25rem; color: white; background: var(--action); font-weight: 700; }
+button:disabled { opacity: .45; cursor: default; }
+.secondary { color: #173a84; background: white; }
+:focus-visible { outline: 3px solid #234eae; outline-offset: 3px; }
+fieldset { border: none; border-bottom: 1px solid var(--rule); margin: 1rem 0; padding: .7rem 0 1rem; }
+legend { font-weight: 700; line-height: 1.55; }
+fieldset label { display: flex; gap: .55rem; padding: .28rem .5rem; }
+fieldset label.key { background: #dcece3; }
+.explanation { padding: .7rem; margin-top: .65rem; background: #eaf1fc; }
+.explanation ul { margin: .4rem 0 0; }
+#score { color: #173a84; font-weight: 700; font-size: 1.25rem; margin-top: 1rem; }
+#status { margin-top: .55rem; }
+@media (max-width: 540px) { #generate { grid-template-columns: 1fr; } }

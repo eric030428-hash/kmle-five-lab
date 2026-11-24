@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>국시 5문항 연습실</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header><span>임상 추론 연습</span><span id="session">교육용 가상 증례</span></header>
+  <main>
+    <h1>국시 5문항 연습실</h1>
+    <p>중심 단어를 넣어 새 가상 증례를 만들고, 다섯 문제를 푼 뒤 해설을 확인하세요.</p>
+    <section class="panel" aria-labelledby="start-title">
+      <h2 id="start-title">문제 세트 시작</h2>
+      <div id="signin"></div>
+      <button id="signout" type="button" hidden>로그아웃</button>
+      <form id="generate">
+        <label for="topics">의학 키워드 1~5개</label>
+        <input id="topics" placeholder="예: 미숙아, 호흡곤란, 흉부 영상" maxlength="250" required>
+        <button id="generate-button" type="submit" disabled>5문항 생성</button>
+      </form>
+      <button id="sample" type="button" class="secondary">샘플 5문항 풀기</button>
+      <p id="status" role="status"></p>
+    </section>
+    <section id="quiz" hidden aria-labelledby="quiz-title">
+      <h2 id="quiz-title"></h2>
+      <form id="answers">
+        <div id="items"></div>
+        <button type="submit">채점 및 해설 보기</button>
+      </form>
+      <p id="score" role="status"></p>
+    </section>
+  </main>
+</body>
+</html>
