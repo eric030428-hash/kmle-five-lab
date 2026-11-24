@@ -16,7 +16,7 @@ app.use((req,res,next)=>{
 app.use(express.static(fileURLToPath(new URL('./public',import.meta.url))));
 const clientId=process.env.GOOGLE_CLIENT_ID;
 const geminiKey=process.env.GEMINI_API_KEY;
-const model=process.env.GEMINI_MODEL||'gemini-2.5-flash';
+const model=process.env.GEMINI_MODEL||'gemini-3.1-flash-lite';
 const google=new OAuth2Client(clientId);
 const work=new Map();
 const calls=new Map();
